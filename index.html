@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apalett - Rede Social para Artistas</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <style>
+        /* CSS Incorporado */
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        /* Art Grid */
+        .arts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .art-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .art-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .art-media {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .art-info {
+            padding: 1.5rem;
+        }
+
+        .art-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .art-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .art-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .artist-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .artist-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5a0cb3;
+        }
+
+        /* Connect Wallet Section */
+        #connectSection {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        #walletAddress {
+            margin-top: 1rem;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        /* Art Upload Form */
+        #uploadForm {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            border: 2px dashed #ddd;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .arts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .arts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">🎨 ArtSocial</div>
+                <div class="nav-links">
+                    <a href="#">Início</a>
+                    <a href="#">Explorar</a>
+                    <a href="#">Artistas</a>
+                    <a href="#">Sobre</a>
+                </div>
+                <div id="userMenu" style="display: none;">
+                    <span id="userAddress"></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Rede Social para Artistas</h1>
+        
+        <section id="connectSection">
+            <h2>Conecte sua Carteira Digital</h2>
+            <p>Para começar a compartilhar suas artes, conecte sua carteira blockchain</p>
+            <button id="connectBtn" class="btn btn-primary">Conectar Carteira</button>
+            <p id="walletAddress"></p>
+        </section>
+
+        <section id="uploadSection" style="display: none;">
+            <h2>Enviar Nova Arte</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="artFile" class="form-label">Arquivo de Arte</label>
+                    <div class="file-upload" onclick="document.getElementById('artFile').click()">
+                        <input type="file" id="artFile" style="display: none;" required>
+                        <p>Clique para selecionar ou arraste seu arquivo</p>
+                        <small>Formatos suportados: JPG, PNG, GIF, MP3, MP4</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="artTitle" class="form-label">Título</label>
+                    <input type="text" id="artTitle" class="form-control" placeholder="Nome da sua obra" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="artDescription" class="form-label">Descrição</label>
+                    <textarea id="artDescription" class="form-control" rows="4" placeholder="Conte sobre sua criação..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isExclusive"> 
+                        Esta é uma obra exclusiva para a ArtSocial
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Registrar Arte na Blockchain</button>
+            </form>
+        </section>
+
+        <section id="gallerySection">
+            <h2>Últimas Obras</h2>
+            <div class="arts-grid" id="artsContainer">
+                <!-- Arte de exemplo 1 -->
+                <div class="art-card">
+                    <img src="https://source.unsplash.com/random/600x400/?painting" alt="Arte de exemplo" class="art-media">
+                    <div class="art-info">
+                        <h3 class="art-title">Paisagem Abstrata</h3>
+                        <p class="art-description">Uma representação moderna das montanhas ao pôr do sol</p>
+                        <div class="art-meta">
+                            <div class="artist-info">
+                                <img src="https://i.pravatar.cc/40" alt="Artista" class="artist-avatar">
+                                <span>0x7f3a...c4d2</span>
+                            </div>
+                            <span>2 dias atrás</span>
+                        </div>
+                        <div class="art-actions">
+                            <button class="btn btn-primary">Ver Detalhes</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Arte de exemplo 2 -->
+                <div class="art-card">
+                    <img src="https://source.unsplash.com/random/600x400/?music" alt="Arte de exemplo" class="art-media">
+                    <div class="art-info">
+                        <h3 class="art-title">Melodia Digital</h3>
+                        <p class="art-description">Composição experimental em loop</p>
+                        <div class="art-meta">
+                            <div class="artist-info">
+                                <img src="https://i.pravatar.cc/40?img=2" alt="Artista" class="artist-avatar">
+                                <span>0x9e2b...f7a1</span>
+                            </div>
+                            <span>1 semana atrás</span>
+                        </div>
+                        <div class="art-actions">
+                            <button class="btn btn-primary">Ouvir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Conexão com a Blockchain
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    const walletAddress = accounts[0];
+                    
+                    document.getElementById('walletAddress').textContent = `Conectado: ${walletAddress}`;
+                    document.getElementById('connectSection').style.display = 'none';
+                    document.getElementById('uploadSection').style.display = 'block';
+                    document.getElementById('userAddress').textContent = `${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}`;
+                    document.getElementById('userMenu').style.display = 'block';
+                    
+                    // Inicializa o Web3
+                    window.web3 = new Web3(window.ethereum);
+                    
+                } catch (error) {
+                    console.error("Erro ao conectar carteira:", error);
+                    alert("Erro ao conectar carteira: " + error.message);
+                }
+            } else {
+                alert("Por favor, instale o MetaMask!");
+            }
+        });
+
+        // Upload de Arte (simulado)
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('artTitle').value;
+            const description = document.getElementById('artDescription').value;
+            const isExclusive = document.getElementById('isExclusive').checked;
+            const fileInput = document.getElementById('artFile');
+            
+            if (!fileInput.files.length) {
+                alert("Por favor, selecione um arquivo!");
+                return;
+            }
+            
+            // Simulação de upload para blockchain
+            alert(`Arte "${title}" será registrada na blockchain!\n(Esta é uma simulação - no código real você implementaria a conexão com seu contrato inteligente)`);
+            
+            // Limpar formulário
+            e.target.reset();
+        });
+
+        // Simulação de carregamento de artes
+        async function loadArts() {
+            // Em uma implementação real, você buscaria da blockchain/API
+            console.log("Carregando artes da blockchain...");
+        }
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            loadArts();
+            
+            // Verifica se já está conectado
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                document.getElementById('walletAddress').textContent = `Conectado: ${window.ethereum.selectedAddress}`;
+                document.getElementById('connectSection').style.display = 'none';
+                document.getElementById('uploadSection').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
